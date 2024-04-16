@@ -1,8 +1,8 @@
-import utils from "./utils";
+import utils from "./utils.js";
 import RNA from "./RNA.js"
 import controls from "./controls.js";
 
-const SAMPLES = 20;
+const SAMPLES = 2;
 const game = Runner.instance_;
 let dinoList = [];
 let dinoIndex = 0;
@@ -14,7 +14,7 @@ function fillDinoList () {
     for (let i = 0; i < SAMPLES; i++) {
         dinoList[i] = new RNA(3, [10, 10, 2]);
         dinoList[i].load(bestRNA);
-        if(i > 0) dinoList[i].mutate(0.5)
+        if(i > 0) dinoList[i].mutate(0.2)
     }
 
     console.log('Lista de dinossauros criada!')
@@ -33,7 +33,7 @@ setInterval(() => {
     if (game.crashed) {
         if (dino.score > bestScore) {
             bestScore = dino.score;
-            bestRNA = dino.save()
+            bestRNA = dino.save();
             console.log('Melhor pontuação: ', bestScore);
         }
         dinoIndex++;
@@ -46,8 +46,8 @@ setInterval(() => {
         game.restart();
     }
 
-    const {tRex, horizon, currentSpeed, distanceRen, dimensions} = game;
-    dino.score = distanceRen - 2000;
+    const {tRex, horizon, currentSpeed, distanceRan, dimensions} = game;
+    dino.score = distanceRan - 2000;
 
     const player = {
         x: tRex.xPos,
@@ -56,28 +56,28 @@ setInterval(() => {
     };
 
     const [obstacle] = horizon.obstacles
-    .map((obstacle) => {
-        return {
-            x: obstacle.xPos,
-            y: obstacle.yPos
-        }
-    })
-    .filter((obstacle) => obstacle.x > player.x)
+        .map((obstacle) => {
+            return {
+                x: obstacle.xPos,
+                y: obstacle.yPos
+            }
+        })
+        .filter((obstacle) => obstacle.x > player.x)
 
     if (obstacle) {
         const distance = 1 - (utils.getDistance(player, obstacle) / dimensions.WIDTH);
         const speed = player.speed / 6;
         const height = Math.tanh(105 - obstacle.y);
 
-        const [jump, crouch] = dino.compute([
+        const [jump, crounch] = dino.compute([
             distance,
             speed,
             height
         ]);
 
-        if (jump === crouch) return;
+        if (jump === crounch) return;
         if (jump) controls.dispatch('jump');
-        if (crouch) controls.dispatch('crouch');
+        if (crounch) controls.dispatch('crounch');
     };
 }, 100);
 
